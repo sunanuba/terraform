@@ -1,0 +1,59 @@
+Example terraform code to create the secuirty group with the associates inbound and outbound network rules.
+
+Original version : 
+
+resource "aws_security_group" "mySG" {
+  name = "mySG"
+  description = "Allow ssh and http ingress"
+  }
+
+resource "aws_vpc_security_group_ingress_rule" "example-ingress1" {
+ secuirty_group_id = aws_security_group.mySG.id
+ description = "Allow incoming http traffic"
+ from_port = "80"
+ to_port = "80"
+ cidr_ipv4 = "10.80.0.0/24"  
+ ip_protocol = "tcp"
+ } 
+ 
+resource "aws_vpc_secuirty_group_ingress_rule" "example-ingress2" {
+ secuirty_group_id = aws_security_group.mySG.id
+ description = "Allow incoming ssh traffic"
+ from_port = "22"
+ to_port = "22"
+ cidr_ipv4 = "10.22.0.0/24"  
+ ip_protocol = "tcp"
+ } 
+
+Improved version:
+
+  
+  
+ variable "myvars" {
+ default = [
+  {
+  description = "Allow incoming ssh traffic"
+  from_port = "22"
+  to_port = "22"
+  cidr_ipv4 = "10.22.0.0/24"
+ },
+ { 
+  description = "Allow incoming http traffic"
+  from_port = "80"
+  to_port = "80"
+  cidr_ipv4 = "10.80.0.0/24"
+ }
+ ]
+ }
+ 
+ resource "aws_vpc_security_group_ingress_rule" "example-ingress" {
+ security_group_id = aws_security_group.mySG.id
+ for_each = { for idx,rule in var.myvars : idx => rule }
+ description = each.value.desciption
+ from_port = each.value.from_port
+ to_port = each.value.to_port
+ cidr_ipv4 = each.value.cidr_ipv4 
+ ip_protocol = "tcp"
+ } 
+ 
+ 
