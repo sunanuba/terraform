@@ -1,4 +1,37 @@
-Example terraform code to create the secuirty group with the associates inbound and outbound network rules.
+------->Usage of for_each against the set of strings
+
+variable "users" {
+  type = set(string)
+  default = ["bob", "alice"]
+}
+resource "aws_iam_user" "example" {
+  for_each = var.users
+  name = each.key
+}
+
+
+--------->Usage of for_each against map
+
+variable "users" {
+  type = map
+  default = {
+   TeamLeader = subha
+   QA = meena
+   Developer = Prabu
+}
+
+resource "aws_iam_user" "example" {
+  for_each = var.users
+  name = each.value
+  tags = {
+   title = each.key
+}
+}
+  
+
+------->Usage of for_each against list of map
+
+Example terraform code to create the secuirty group with the associated inbound and outbound network rules.
 
 Original version : 
 
@@ -25,8 +58,7 @@ resource "aws_vpc_secuirty_group_ingress_rule" "example-ingress2" {
 
 Improved version:
 
-  
-  
+
  variable "myvars" {
  default = [
   {
